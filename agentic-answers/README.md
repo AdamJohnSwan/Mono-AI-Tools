@@ -1,6 +1,6 @@
-# rag-server
+# rag_server
 
-The `rag-server` is an API built using FastAPI that provides endpoints to create knowledge bases and retrieve information from them. 
+The `rag_server` is an API built using FastAPI that provides endpoints to create knowledge bases and retrieve information from them. 
 
 ## Environment Variables 
 

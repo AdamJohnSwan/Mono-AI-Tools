@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "cwd": "${workspaceFolder}/apps/rag-server",
+            "cwd": "${workspaceFolder}/rag_server/src",
             "name": "Rag Server debugger",
             "type": "debugpy",
             "request": "launch",
@@ -17,14 +17,15 @@
             "justMyCode": false,
         },
          {
-            "cwd": "${workspaceFolder}/apps/agentic-answers",
+            "cwd": "${workspaceFolder}/agentic-answers",
             "name": "Agentic Answers debugger",
             "type": "debugpy",
             "request": "launch",
-            "module": "fastapi",
+            "module": "uvicorn",
             "args": [
-                "dev",
-                "--port", "8002"
+                "agentic_answers.main:app",
+                "--port", "8001",
+                "--reload"
             ],
             "justMyCode": false,
         }

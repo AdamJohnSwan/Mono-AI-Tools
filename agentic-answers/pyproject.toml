@@ -1,0 +1,29 @@
+[build-system]
+requires = ["poetry-core>=2.0"]
+build-backend = "poetry.core.masonry.api"
+
+[project]
+name = "agentic_answers"
+readme = "README.md"
+requires-python = "~3.12"
+dependencies = [
+    "shared",
+    "ag2 (>=0.9.8.post1,<0.10.0)",
+    "dotenv (>=0.9.9,<0.10.0)",
+    "fastapi (>=0.116.1,<0.117.0)",
+    "uvicorn[standard] (>=0.35.0,<0.36.0)"
+]
+
+
+[tool.poetry]
+packages = [
+    { include = "agentic_answers", from = "." },
+    { include = "shared", from = "../shared" },
+]
+version = "0.0.0"
+
+
+[tool.poetry-monoranger-plugin]
+enabled = true
+monorepo-root = "../"
+version-pinning-rule = '=='

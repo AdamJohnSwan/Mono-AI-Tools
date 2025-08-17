@@ -1,5 +1,7 @@
 {
-    "python.analysis.extraPaths": ["libs"],
-    "python.autoComplete.extraPaths": ["libs"],
+    "python.analysis.extraPaths": [
+        "shared"
+    ],
+    "python.autoComplete.extraPaths": ["shared"],
     "python.analysis.typeCheckingMode": "strict",
 }

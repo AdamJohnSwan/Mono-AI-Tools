@@ -1,0 +1,27 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[project]
+name = "shared"
+description = "Shared library for ai tools"
+readme = "README.md"
+requires-python = "~3.12"
+dependencies = [
+    "chromadb>=1.0.17",
+    "ddgs>=9.5.2",
+    "ollama>=0.5.3",
+]
+
+
+[tool.poetry]
+packages = [
+    { include = "shared", from = "." },
+]
+version = "0.0.0"
+
+
+[tool.poetry-monoranger-plugin]
+enabled = true
+monorepo-root = "../"
+version-pinning-rule = '=='  

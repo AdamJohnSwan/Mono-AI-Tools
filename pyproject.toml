@@ -1,24 +1,30 @@
+[build-system]
+requires = ["poetry-core>=2.0"]
+build-backend = "poetry.core.masonry.api"
+
 [project]
-name = "mono-mcp-repo"
-version = "0.1.0"
-description = ""
+name = "root-project"
+description = "Root Project"
 readme = "README.md"
-requires-python = ">=3.12"
+
+requires-python = "~3.12"
 
 dependencies = [
-    "shared",
-    "rag-server",
-    "agentic-answers"
-]
+     "shared",
+     "rag-server",
+     "agentic-answers",
 
-[tool.uv.sources]
-shared = { workspace = true }
-rag-server = { workspace = true }
-agentic-answers = { workspace = true }
-
-[tool.uv.workspace]
-members = [
-  "apps/agentic-answers",
-  "apps/rag-server",
-  "libs",
 ]
+version = "0.0.0"
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.requires-plugins]
+poetry-monoranger-plugin = { version = ">=0.4.1,<0.5.0" }
+
+
+[tool.poetry.dependencies]
+shared = { path = "shared", develop = true }
+rag-server = { path = "rag-server", develop = true }
+agentic-answers = { path = "agentic-answers", develop = true }
