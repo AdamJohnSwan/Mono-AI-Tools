@@ -2,9 +2,11 @@ import asyncio
 from typing import Annotated
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from shared.chroma.chroma_client import ChromaClient
 from shared.embedding.embedding_client import EmbeddingClient
 from shared.rag.rag_client import RagClient
+
 from .config import get_config
 from .dtos.requests import CreateKnowledgeRequest, SearchKnowledgeRequest
 from .dtos.responses import CreateKnowledgeResponse, GetKnowledgeResponse

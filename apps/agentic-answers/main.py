@@ -4,8 +4,8 @@ from fastapi.responses import StreamingResponse
 
 from dotenv import load_dotenv
 
-from agent_workflow import AgentWorkflow, dict_to_str
-from dtos.request import AgenticRequest
+from .agent_workflow import AgentWorkflow, dict_to_str
+from .dtos.request import AgenticRequest
 
 app = FastAPI(
     title="Agentic Answers API",

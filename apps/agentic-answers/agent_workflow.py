@@ -1,14 +1,17 @@
-from autogen import ConversableAgent, register_function # type: ignore
-from .config import get_config
-from .dtos.response import EventResponse
-import prompts
-from typing import Annotated, Any, AsyncGenerator
-from pydantic import BaseModel
 import json
+from typing import Annotated, Any, AsyncGenerator
+
+from autogen import ConversableAgent, register_function  # type: ignore - ignore stub file
+from pydantic import BaseModel
+
 from shared.chroma.chroma_client import ChromaClient
 from shared.embedding.embedding_client import EmbeddingClient
 from shared.rag.rag_client import RagClient
 from shared.web_search.ddg_search import ddg_search
+
+from .config import get_config
+from .dtos.response import EventResponse
+from .  import prompts
 
 async def dict_to_str(obj: AsyncGenerator[EventResponse, None]) -> AsyncGenerator[str, None]:
     yield json.dumps(obj)
