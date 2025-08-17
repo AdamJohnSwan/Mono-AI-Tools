@@ -1,10 +1,11 @@
+import json
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
 from dotenv import load_dotenv
 
-from .agent_workflow import AgentWorkflow, dict_to_str
+from .agent_workflow import AgentWorkflow
 from .dtos.request import AgenticRequest
 from .dtos.response import EventResponse
 
@@ -22,15 +23,14 @@ app.add_middleware(
 )
 load_dotenv() 
 
-# -------------------------------
-# Routes
-# -------------------------------
-
 @app.post("/agentic-answers", summary="Complete a task using AI agents")
 async def run_agentic_answers(req: AgenticRequest, stream: bool = Query(default=False, description="Whether or not to stream the response")):
     agent_workflow = AgentWorkflow(req.prompt)
     if (stream):
-        return StreamingResponse(dict_to_str(agent_workflow.run_workflow()), media_type="text/event-stream")
+        async def stream_agent_workflow():
+            async for event in agent_workflow.run_workflow():
+                yield json.dumps(event)
+        return StreamingResponse(stream_agent_workflow())
     else:
         events: list[EventResponse] = []
         async for event in agent_workflow.run_workflow():

@@ -13,9 +13,6 @@ from .config import get_config
 from .dtos.response import EventResponse
 from .  import prompts
 
-async def dict_to_str(obj: AsyncGenerator[EventResponse, None]) -> AsyncGenerator[str, None]:
-    yield json.dumps(obj)
-
 class AgentWorkflow():
     def __init__(self, prompt: str):
         self.config = get_config()
