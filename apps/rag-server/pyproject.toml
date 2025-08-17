@@ -1,0 +1,16 @@
+[project]
+name = "rag-server"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dotenv>=0.9.9",
+    "fastapi[standard]>=0.116.1",
+    "shared",
+]
+[tool.uv.sources]
+shared = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+only-include = ["__init__.py"]

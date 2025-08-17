@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": ["libs"],
+    "python.autoComplete.extraPaths": ["libs"],
+    "python.analysis.typeCheckingMode": "strict",
+}

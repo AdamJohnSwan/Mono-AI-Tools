@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "cwd": "${workspaceFolder}/apps/rag-server",
+            "name": "Rag Server debugger",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "fastapi",
+            "args": [
+                "dev",
+                "--port", "8001"
+            ],
+            "justMyCode": false,
+        },
+         {
+            "cwd": "${workspaceFolder}/apps/agentic-answers",
+            "name": "Agentic Answers debugger",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "fastapi",
+            "args": [
+                "dev",
+                "--port", "8002"
+            ],
+            "justMyCode": false,
+        }
+    ]
+}
