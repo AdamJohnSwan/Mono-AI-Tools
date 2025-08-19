@@ -3648,6 +3648,24 @@ files = [
 anyio = ">=3.0.0"
 
 [[package]]
+name = "web-scraper"
+version = "0.0.0"
+description = ""
+optional = false
+python-versions = "~3.12"
+groups = ["main"]
+files = []
+develop = true
+
+[package.dependencies]
+dotenv = ">=0.9.9"
+fastapi = {version = ">=0.116.1", extras = ["standard"]}
+
+[package.source]
+type = "directory"
+url = "web-scraper"
+
+[[package]]
 name = "websocket-client"
 version = "1.8.0"
 description = "WebSocket client for Python with low level API options"
@@ -3766,4 +3784,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "~3.12"
-content-hash = "91264578bad5dddc1ec51a85b3eb616828ea644442a129c4a2f1f8c8e2ed5c77"
+content-hash = "a744b32dc242b389987d16a3441c24aab6d4b1be4af0f2c9d440fa7b2ba99f1b"

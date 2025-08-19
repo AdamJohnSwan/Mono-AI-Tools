@@ -13,7 +13,7 @@ dependencies = [
      "shared",
      "rag-server",
      "agentic-answers",
-
+     "web-scraper"
 ]
 version = "0.0.0"
 
@@ -28,3 +28,4 @@ poetry-monoranger-plugin = { version = ">=0.4.1,<0.5.0" }
 shared = { path = "shared", develop = true }
 rag-server = { path = "rag-server", develop = true }
 agentic-answers = { path = "agentic-answers", develop = true }
+web-scraper = {path = "web-scraper", develop = true}
