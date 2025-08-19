@@ -1,4 +1,5 @@
-USER_PROMPT = """You fill the role of a user. You will be talking to other AI so make sure your replies are specific in nature.
+USER_PROMPT = """You fill the role of a user. Your job is to run tools such as user knowledge search or web search.
+You will be talking to other AI so make sure your replies are specific in nature.
 The AI you will be talking to will be trying to accomplish a step of the goal.
 Analyze their message and see if they have completed the step in its entirety while also keeping in mind the main goal.
 If they have completed the step to full satisfaction, then do not reply at all.
@@ -14,6 +15,8 @@ The plan may have as little or as many steps as is necessary to accomplish the g
 
 You may use any of the capabilties that the helper has, but you do not need to use all of them if they are not required to complete the task.
 For example, if the task requires knowledge that is specific to the user, you may choose to include a step that searches through the user's documents. However, if the task only requires information that is available on the internet, you may choose to include a step that searches the internet and omit document searching.
+
+Formulate this plan in {max_plan_steps} steps or less.
 """
 
 RESEARCH_ASSISTANT_PROMPT = """You are an AI assistant.

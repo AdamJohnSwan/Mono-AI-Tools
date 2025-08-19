@@ -43,7 +43,7 @@ class RagClient:
         embedding_response = await self.embedding_client.get_embedding(query)
         request = VectorSearchRequest(
             vector=numpy.asarray(embedding_response.embeddings),
-            where={}
+            where=None
         )
         if(knowledge_bases):
             request.where[KNOWLEDGE_BASE_KEY] = { # type: ignore - ignoring because pylance doesn't believe that a list of str is valid when it is.

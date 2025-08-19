@@ -1,4 +1,5 @@
 import json
+import re
 from typing import Annotated, Any, AsyncGenerator
 
 from autogen import ConversableAgent, register_function  # type: ignore - ignore stub file
@@ -46,7 +47,7 @@ class AgentWorkflow():
         # Provides the initial high level plan
         self.planner = ConversableAgent(
             name="Planner",
-            system_message=prompts.PLANNER_MESSAGE,
+            system_message=prompts.PLANNER_MESSAGE.format(max_plan_steps=self.config.max_plan_steps),
             llm_config=planner_llm_config,
             human_input_mode="NEVER",
         )
@@ -56,8 +57,7 @@ class AgentWorkflow():
             name="Research_Assistant",
             system_message=prompts.RESEARCH_ASSISTANT_PROMPT,
             llm_config=llm_config,
-            human_input_mode="NEVER",
-            is_termination_msg=lambda msg: "<ANSWER>" in msg["content"] or "<TERMINATE>" in msg["content"],
+            human_input_mode="NEVER"
         )
 
         # Decides whether the output of the previous step satisfactorily fulfilled the instruction it was given. 
@@ -137,7 +137,10 @@ class AgentWorkflow():
                 if ("name" in message and "content" in message
                     and message["name"] == research_assistant_agent.name
                     and "TERMINATE" not in message["content"]):
-                    return message["content"]
+                    summary = message["content"]
+                    if "<think>" and "</think>" in message["content"]:
+                        summary = re.sub(r"<think>.*<\/think>", "", summary, flags=re.DOTALL)
+                    return summary
             return ""
 
         #########################
@@ -147,7 +150,7 @@ class AgentWorkflow():
         self.emit_event(message="Creating a plan...")
         try:
             output = await self.user_proxy.a_initiate_chat(
-                message=f"{self.prompt} \n Formulate this plan in no more than {self.config.max_plan_steps} steps.",
+                message=self.prompt,
                 recipient=self.planner,
                 max_turns=1,
             )
@@ -213,7 +216,7 @@ class AgentWorkflow():
             else:
                 reflection_message = instruction
                 # Only append the previous step and its output to the record if it accomplished its task successfully.
-                # It was found that storing information about unsuccesful steps causes more confusion than help to the agents
+                # It was found that storing information about unsuccessful steps causes more confusion than help to the agents
                 answer_output.append(research_output)
                 steps_taken.append(instruction)
                 instruction_index += 1

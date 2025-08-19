@@ -18,7 +18,7 @@ class VectorItem:
 @dataclass
 class VectorSearchRequest:
     vector: NDArray[Union[numpy.int32, numpy.float32]]
-    where: Where
+    where: Optional[Where]
 
 @dataclass
 class VectorSearchResult:
