@@ -25,7 +25,7 @@ load_dotenv()
 
 @app.post("/agentic-answers", summary="Complete a task using AI agents")
 async def run_agentic_answers(req: AgenticRequest, stream: bool = Query(default=False, description="Whether or not to stream the response")):
-    agent_workflow = AgentWorkflow(req.prompt)
+    agent_workflow = AgentWorkflow(req.prompt, req.max_plan_steps)
     if (stream):
         async def stream_agent_workflow():
             async for event in agent_workflow.run_workflow():

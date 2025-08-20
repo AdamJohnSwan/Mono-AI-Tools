@@ -15,8 +15,10 @@ from .dtos.response import EventResponse
 from .  import prompts
 
 class AgentWorkflow():
-    def __init__(self, prompt: str):
+    def __init__(self, prompt: str, max_plan_steps: int):
         self.config = get_config()
+
+        self.max_plan_steps = max_plan_steps
 
         chroma_client = ChromaClient(self.config.chroma_config)
         embedding_client = EmbeddingClient(self.config.embedding_config)
@@ -47,7 +49,7 @@ class AgentWorkflow():
         # Provides the initial high level plan
         self.planner = ConversableAgent(
             name="Planner",
-            system_message=prompts.PLANNER_MESSAGE.format(max_plan_steps=self.config.max_plan_steps),
+            system_message=prompts.PLANNER_MESSAGE.format(max_plan_steps=self.max_plan_steps),
             llm_config=planner_llm_config,
             human_input_mode="NEVER",
         )
@@ -164,7 +166,7 @@ class AgentWorkflow():
         step_count = 0
         instruction_index = 0
         instruction = planner_output[instruction_index]
-        while step_count < self.config.max_plan_steps:
+        while step_count < self.max_plan_steps:
             self.emit_event(message="Executing step: " + instruction)
             research_prompt = instruction
             if answer_output:

@@ -5,7 +5,6 @@ from shared.get_env import get_env
 class Config():
     def __init__(self):
         self.model_id: str = get_env("TASK_MODEL_ID", str)
-        self.max_plan_steps: int = get_env("MAX_PLAN_STEPS", int, 3)
         self.api_url: str = get_env("OLLAMA_API_URL", str)
         self.tempature: float = get_env("MODEL_TEMPERATURE", float, 0.2)
         self.chroma_config = ChromaClientConfig(

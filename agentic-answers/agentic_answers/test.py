@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 async def test():
     load_dotenv() 
     test_prompt = "Write me a story I will like"
-    agent_workflow = AgentWorkflow(test_prompt)
+    agent_workflow = AgentWorkflow(test_prompt, 3)
     async for event in agent_workflow.run_workflow():
         print(event)
 
