@@ -1,7 +1,3 @@
 {
-    "python.analysis.extraPaths": [
-        "shared"
-    ],
-    "python.autoComplete.extraPaths": ["shared"],
-    "python.analysis.typeCheckingMode": "strict",
+    "python.autoComplete.extraPaths": ["shared"]
 }

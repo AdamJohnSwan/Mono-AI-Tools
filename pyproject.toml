@@ -29,3 +29,8 @@ shared = { path = "shared", develop = true }
 rag-server = { path = "rag-server", develop = true }
 agentic-answers = { path = "agentic-answers", develop = true }
 web-scraper = {path = "web-scraper", develop = true}
+
+[tool.pyright]
+reportMissingTypeStubs = false
+typeCheckingMode = "strict"
+extraPaths = "shared"

@@ -1,9 +1,12 @@
-from typing import Annotated
+import asyncio
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .dtos.requests import ScrapeArticleRequest
+from .dtos.responses import ScrapeArticleResponse
 from .config import get_config
+from .scraper import Scraper
 
 app = FastAPI(
     title="Web Scraper",
@@ -22,6 +25,8 @@ app.add_middleware(
 load_dotenv() 
 config = get_config()
 
-@app.get("/scrape/{url}", summary="Scrape a webpage and attempt to get the main contnet", status_code=200, )
-async def scrape_webpage(url: Annotated[str, "The url of the webpage to scrape."]):
-    pass
+@app.post("/scrape/article", summary="Scrape a webpage and get the article", status_code=200)
+async def scrape_article(request: ScrapeArticleRequest) -> ScrapeArticleResponse:
+    scraper = Scraper(config, request.url)
+    content = await asyncio.to_thread(scraper.scrape_article)
+    return ScrapeArticleResponse(content=content)
