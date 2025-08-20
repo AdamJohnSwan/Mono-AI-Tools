@@ -17,7 +17,7 @@
             ],
             "justMyCode": false,
         },
-         {
+        {
             "cwd": "${workspaceFolder}/agentic-answers",
             "name": "Agentic Answers debugger",
             "type": "debugpy",
@@ -26,6 +26,19 @@
             "args": [
                 "agentic_answers.main:app",
                 "--port", "8001",
+                "--reload"
+            ],
+            "justMyCode": false,
+        },
+        {
+            "cwd": "${workspaceFolder}/web-scraper",
+            "name": "Web Scraper debugger",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "web_scraper.main:app",
+                "--port", "8002",
                 "--reload"
             ],
             "justMyCode": false,

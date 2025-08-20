@@ -11,7 +11,7 @@ dependencies = [
     "fastapi[standard]>=0.116.1",
     "curl-cffi (>=0.13.0,<0.14.0)",
     "newspaper4k (>=0.9.3.1,<0.10.0.0)",
-    "lxml (>=6.0.0,<7.0.0)",
+    "lxml[html-clean] (>=6.0.0,<7.0.0)",
 ]
 
 

@@ -1465,11 +1465,29 @@ files = [
     {file = "lxml-6.0.0.tar.gz", hash = "sha256:032e65120339d44cdc3efc326c9f660f5f7205f3a535c1fdbf898b29ea01fb72"},
 ]
 
+[package.dependencies]
+lxml_html_clean = {version = "*", optional = true, markers = "extra == \"html-clean\""}
+
 [package.extras]
 cssselect = ["cssselect (>=0.7)"]
 html-clean = ["lxml_html_clean"]
 html5 = ["html5lib"]
 htmlsoup = ["BeautifulSoup4"]
+
+[[package]]
+name = "lxml-html-clean"
+version = "0.4.2"
+description = "HTML cleaner from lxml project"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "lxml_html_clean-0.4.2-py3-none-any.whl", hash = "sha256:74ccfba277adcfea87a1e9294f47dd86b05d65b4da7c5b07966e3d5f3be8a505"},
+    {file = "lxml_html_clean-0.4.2.tar.gz", hash = "sha256:91291e7b5db95430abf461bc53440964d58e06cc468950f9e47db64976cebcb3"},
+]
+
+[package.dependencies]
+lxml = "*"
 
 [[package]]
 name = "markdown-it-py"
@@ -4188,7 +4206,7 @@ develop = true
 curl-cffi = ">=0.13.0,<0.14.0"
 dotenv = ">=0.9.9"
 fastapi = {version = ">=0.116.1", extras = ["standard"]}
-lxml = ">=6.0.0,<7.0.0"
+lxml = {version = ">=6.0.0,<7.0.0", extras = ["html-clean"]}
 newspaper4k = ">=0.9.3.1,<0.10.0.0"
 
 [package.source]

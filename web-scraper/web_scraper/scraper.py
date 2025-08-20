@@ -1,18 +1,18 @@
 from typing import Optional
-from xml.etree.ElementTree import Element
 import curl_cffi
 from newspaper import Article
-from lxml.etree import HTMLParser, HTML
+from lxml import etree
 
-
+from .dtos.responses import XpathResult
 from .config import Config
 
 class Scraper:
     __html: Optional[str]
-    def __init__(self, config: Config, url: str, xpaths: list[str] = [] ):
+    def __init__(self, config: Config, url: str, xpaths: list[str] = [], html: Optional[str] = None ):
         self.config = config
         self.url = url
         self.xpath = xpaths
+        self.__html=html
 
     def __get_html(self) -> str:
         """
@@ -30,19 +30,30 @@ class Scraper:
         article.parse()
         return article.text
     
-    def scrape_content(self, xpath: str) -> list[str]:
+    def scrape_content(self, xpaths: list[str]) -> list[XpathResult]:
         html = self.__get_html()
-        root = HTML(text=html, parser=HTMLParser())
-        elements = root.xpath(xpath, smart_strings=False)
-        if not isinstance(elements, list):
-            raise ValueError("Not valid xpath.")
-        values: list[str] = []
-        for el in elements:
-            if isinstance(el, str):
-                values.append(el)
-            elif isinstance(el, bytes):
-                values.append(el.decode("utf-8"))
-            elif isinstance(el, Element) and el.text:
-                values.append(el.text)
+        root = etree.HTML(text=html)
+        values: list[XpathResult] = []
+        for xpath in xpaths:
+            elements = root.xpath(xpath)
+            if not isinstance(elements, list):
+                values.append(XpathResult(
+                    xpath=xpath,
+                    nodes=[],
+                    error="Not valid xpath"
+                ))
+                continue
+            nodes: list[str] = []
+            for el in elements:
+                if isinstance(el, str):
+                    nodes.append(el)
+                elif isinstance(el, bytes):
+                    nodes.append(el.decode("utf-8"))
+                elif etree.iselement(el):
+                    nodes.append(etree.tostring(el, encoding="unicode", with_tail=False))
+            values.append(XpathResult(
+                xpath=xpath,
+                nodes=nodes
+            ))
         return values
         
