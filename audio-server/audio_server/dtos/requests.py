@@ -10,3 +10,4 @@ class TextToSpeechRequest(BaseModel):
     )
     input: str = Field(description="The text to synthesize.")
     voice: str = Field(description="The voice to use")
+    stream: bool = Field(default=False, description="Whether to stream the response.")
