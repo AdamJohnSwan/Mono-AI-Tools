@@ -1,6 +1,6 @@
 from pathlib import Path
 from shared.get_env import get_env
-import torch
+import subprocess
 
 
 class Config:
@@ -11,7 +11,15 @@ class Config:
         directory: str = get_env("VOICE_DIRECTORY", str, "")
         self.voice_directory = (Path(directory) if directory else Path()).resolve()
         self.cache_timeout = get_env("VOICE_CACHE_SECONDS", int, 300)
-        self.is_cuda_available = torch.cuda.is_available()
+        smi_check = subprocess.run(
+            ['nvidia-smi'],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        self.is_cuda_available = "CUDA Version:" in smi_check.stdout
+            
+        
 
 def get_config():
     return Config()

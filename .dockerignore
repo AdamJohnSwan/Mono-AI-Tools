@@ -1,6 +1,7 @@
-*.venv
+**/.venv
 .poetry
 .vscode
 **/__pycache__
 *.env
-*.onnx*
+**/*.onnx*
+.git
