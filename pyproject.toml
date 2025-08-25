@@ -5,7 +5,6 @@ build-backend = "poetry.core.masonry.api"
 [project]
 name = "root-project"
 description = "Root Project"
-readme = "README.md"
 
 requires-python = "~3.12"
 
