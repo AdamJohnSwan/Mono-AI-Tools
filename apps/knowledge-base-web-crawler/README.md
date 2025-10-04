@@ -13,7 +13,7 @@ OPENWEBUI_TOKEN=string # OpenWebUI API key.
 ## Build the application
 
 ```bash
-uv install
+uv sync
 ```
 
 ## Run the Application

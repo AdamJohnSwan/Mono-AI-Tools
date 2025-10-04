@@ -8,10 +8,6 @@ The repo uses `uv` for dependency management and packaging.
 - knowledge-base-web-crawler
   - MCP tool that will crawl a url and then upload the result to an OpenWebUI knowledge base
 
-## Install dependencies
-
-`uv install`
-
 ## Running a project
 
 Each project has their own README with run instructions.
