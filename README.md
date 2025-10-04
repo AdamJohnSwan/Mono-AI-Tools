@@ -2,19 +2,15 @@
 
 This is a monorepo containing tools that I use with my locally running AI models.
 
-The repo uses `poetry` for dependency management and packaging.
+The repo uses `uv` for dependency management and packaging.
 
 ## The tools
-- agentic-answers
-  - Web API that will answers questions using multi-agent reasoning
-- rag-server
-  - Web API that allows adding, editing, and querying documents using semantic search.
-- web-scraper
-  - Web API that can be used to get content from a web page.
+- knowledge-base-web-crawler
+  - MCP tool that will crawl a url and then upload the result to an OpenWebUI knowledge base
 
 ## Install dependencies
 
-`poetry install`
+`uv install`
 
 ## Running a project
 
