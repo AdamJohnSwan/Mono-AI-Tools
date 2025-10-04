@@ -1,37 +1,15 @@
-[build-system]
-requires = ["poetry-core>=2.0"]
-build-backend = "poetry.core.masonry.api"
-
 [project]
 name = "root-project"
 description = "Root Project"
 
-requires-python = "~3.12"
-
-dependencies = [
-     "shared",
-     "rag-server",
-     "agentic-answers",
-     "web-scraper",
-     "audio-server"
-]
 version = "0.0.0"
-
-[tool.poetry]
-package-mode = false
-
-[tool.poetry.requires-plugins]
-poetry-monoranger-plugin = { version = ">=0.4.1,<0.5.0" }
-
-
-[tool.poetry.dependencies]
-shared = { path = "shared", develop = true }
-rag-server = { path = "rag-server", develop = true }
-agentic-answers = { path = "agentic-answers", develop = true }
-web-scraper = {path = "web-scraper", develop = true}
-audio-server = {path = "audio-server", develop = true}
 
 [tool.pyright]
 reportMissingTypeStubs = false
-typeCheckingMode = "strict"
+typeCheckingMode = "standard"
 extraPaths = "shared"
+
+[tool.uv.workspace]
+members = [
+    "apps/knowledge-base-web-crawler",
+]

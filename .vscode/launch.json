@@ -16,45 +16,6 @@
                 "--reload"
             ],
             "justMyCode": false,
-        },
-        {
-            "cwd": "${workspaceFolder}/agentic-answers",
-            "name": "Agentic Answers debugger",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvicorn",
-            "args": [
-                "agentic_answers.main:app",
-                "--port", "8002",
-                "--reload"
-            ],
-            "justMyCode": false,
-        },
-        {
-            "cwd": "${workspaceFolder}/web-scraper",
-            "name": "Web Scraper debugger",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvicorn",
-            "args": [
-                "web_scraper.main:app",
-                "--port", "8003",
-                "--reload"
-            ],
-            "justMyCode": false,
-        },
-        {
-            "cwd": "${workspaceFolder}/audio-server",
-            "name": "Audio Server debugger",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvicorn",
-            "args": [
-                "audio_server.main:app",
-                "--port", "8004",
-                "--reload"
-            ],
-            "justMyCode": false,
         }
     ]
 }
