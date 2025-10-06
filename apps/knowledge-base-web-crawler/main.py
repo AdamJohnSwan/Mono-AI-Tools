@@ -9,6 +9,7 @@ from crawl4ai.deep_crawling import BFSDeepCrawlStrategy
 from crawl4ai.async_dispatcher import MemoryAdaptiveDispatcher
 from crawl4ai.content_scraping_strategy import LXMLWebScrapingStrategy
 from mcp.server.fastmcp import FastMCP
+from pydantic import Field
 
 from dotenv import load_dotenv
 
@@ -30,13 +31,12 @@ if not API_URL:
 mcp = FastMCP("Crawler Server")
 
 @mcp.tool()
-async def crawl_and_upload(url: str, depth: int = 1) -> str:
+async def crawl_and_upload(
+    url: str = Field(description="The URL to crawl."),
+    depth: int = Field(default=1, description="Optional. The depth of the crawl.")
+) -> str:
     """
     Crawls a given URL and uploads the crawled pages.
-
-    Args:
-        url: The url to crawl.
-        depth: Optional. The depth of the crawl.
     """
     # Configure a 1-level deep crawl
     browser_config = BrowserConfig(
