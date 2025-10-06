@@ -8,6 +8,7 @@ Create a `.env` file in the project root with the required environment variables
 ```plaintext
 OPENWEBUI_API_URL=string # url to the instance of OpenWebUI
 OPENWEBUI_TOKEN=string # OpenWebUI API key.
+MAX_CRAWL_SESSIONS=int # The maximum number of concurrent crawling tasks allowed. Default: 5
 ```
 
 ## Build the application

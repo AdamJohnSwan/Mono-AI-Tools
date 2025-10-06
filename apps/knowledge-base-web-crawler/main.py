@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 import aiohttp
 from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlResult, CrawlerRunConfig, DefaultMarkdownGenerator, PruningContentFilter
 from crawl4ai.deep_crawling import BFSDeepCrawlStrategy
-
+from crawl4ai.async_dispatcher import MemoryAdaptiveDispatcher
 from crawl4ai.content_scraping_strategy import LXMLWebScrapingStrategy
 from mcp.server.fastmcp import FastMCP
 
@@ -18,6 +18,9 @@ load_dotenv()
 # Configuration for OpenWebUI API
 API_URL = os.getenv("OPENWEBUI_API_URL")
 TOKEN = os.getenv("OPENWEBUI_TOKEN")
+MAX_CRAWL_SESSION = int(os.getenv("MAX_CRAWL_SESSIONS", 5))
+if MAX_CRAWL_SESSION < 1:
+    MAX_CRAWL_SESSION = 1
 
 if not TOKEN:
     raise ValueError("OPENWEBUI_TOKEN environment variable is not set.")
@@ -27,9 +30,13 @@ if not API_URL:
 mcp = FastMCP("Crawler Server")
 
 @mcp.tool()
-async def crawl_and_upload(url: str) -> str:
+async def crawl_and_upload(url: str, depth: int = 1) -> str:
     """
     Crawls a given URL and uploads the crawled pages.
+
+    Args:
+        url: The url to crawl.
+        depth: Optional. The depth of the crawl.
     """
     # Configure a 1-level deep crawl
     browser_config = BrowserConfig(
@@ -38,7 +45,7 @@ async def crawl_and_upload(url: str) -> str:
     )
     crawler_config = CrawlerRunConfig(
         deep_crawl_strategy=BFSDeepCrawlStrategy(
-            max_depth=1,
+            max_depth=depth,
             include_external=False
         ),
         scraping_strategy=LXMLWebScrapingStrategy(),
@@ -54,13 +61,18 @@ async def crawl_and_upload(url: str) -> str:
         verbose=False,
         stream=True
     )
+    dispatcher = MemoryAdaptiveDispatcher(
+        memory_threshold_percent=75.0,
+        check_interval=1.0,
+        max_session_permit=MAX_CRAWL_SESSION,
+    )
 
     name = extract_friendly_name(url)
     knowledge_base_response = await create_knowledge_base(name, url)
     knowledge_base_id = knowledge_base_response['id']
     result_count = 0
     async with AsyncWebCrawler(config=browser_config) as crawler:
-        generator = await crawler.arun(url, config=crawler_config)
+        generator = await crawler.arun_many(urls=[url], dispatcher=dispatcher, config=crawler_config)
         async for result in cast(AsyncGenerator[CrawlResult, None], generator):
             if not result.markdown:
                 logger.warning(f"No markdown generated for {result.url}, skipping...")
