@@ -12,4 +12,5 @@ extraPaths = "shared"
 [tool.uv.workspace]
 members = [
     "apps/knowledge-base-web-crawler",
+    "apps/tts-server",
 ]
