@@ -14,7 +14,7 @@ from pydantic import Field
 from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
-load_dotenv() 
+load_dotenv()
 
 # Configuration for OpenWebUI API
 API_URL = os.getenv("OPENWEBUI_API_URL")
@@ -72,7 +72,7 @@ async def crawl_and_upload(
     knowledge_base_id = knowledge_base_response['id']
     result_count = 0
     async with AsyncWebCrawler(config=browser_config) as crawler:
-        generator = await crawler.arun_many(urls=[url], dispatcher=dispatcher, config=crawler_config)
+        generator = await crawler.arun(url=url, dispatcher=dispatcher, config=crawler_config)
         async for result in cast(AsyncGenerator[CrawlResult, None], generator):
             if not result.markdown:
                 logger.warning(f"No markdown generated for {result.url}, skipping...")
@@ -140,6 +140,9 @@ async def post_request(endpoint: str, json: Optional[dict] = None, form_data: Op
     async with aiohttp.ClientSession() as session:
         headers = {'Accept': 'application/json', 'Authorization': f"Bearer {TOKEN}"}
         async with session.post(f"{API_URL}{endpoint}", headers=headers, json=json, data=form_data) as response:
+            if response.status != 200:
+                text = await response.text()
+                raise Exception(f"API request failed with status {response.status}: {text}")
             return await response.json()
 
 def extract_friendly_name(url: str) -> str:
