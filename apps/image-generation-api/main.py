@@ -14,16 +14,22 @@ import time
 # Initialize FastAPI app
 app = FastAPI(title="Image Generation API", version="1.0.0")
 
+# Get configuration from environment variables
+MODEL_NAME = os.getenv("IMAGE_MODEL_NAME")
+if not MODEL_NAME:
+    raise RuntimeError("IMAGE_MODEL_NAME environment variable is required")
+
+IMAGE_SAVE_PATH = os.getenv("IMAGE_SAVE_PATH")
+
 # Global shared pipeline
 shared_pipeline = None
 
 # Load the model once when the app starts
-model_id = "runwayml/stable-diffusion-v1-5"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 try:
     shared_pipeline = StableDiffusionPipeline.from_pretrained(
-        model_id,
+        MODEL_NAME,
         torch_dtype=torch.float16 if device == "cuda" else torch.float32
     )
     shared_pipeline = shared_pipeline.to(device)
@@ -33,9 +39,6 @@ except Exception as e:
 # Pydantic models for request/response
 class TextToImageInput(BaseModel):
     prompt: str
-    n: Optional[int] = 1
-    size: Optional[str] = "512x512"
-    response_format: Optional[str] = "url"
 
 class ImageResponse(BaseModel):
     created: int
