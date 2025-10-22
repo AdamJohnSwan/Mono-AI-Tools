@@ -1,5 +1,6 @@
 import os
-import uuid
+import asyncio
+import random
 from typing import Optional, List
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -8,25 +9,29 @@ import torch
 from PIL import Image
 import io
 import base64
+import time
 
 # Initialize FastAPI app
 app = FastAPI(title="Image Generation API", version="1.0.0")
 
-# Load the model
+# Global shared pipeline
+shared_pipeline = None
+
+# Load the model once when the app starts
 model_id = "runwayml/stable-diffusion-v1-5"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 try:
-    pipe = StableDiffusionPipeline.from_pretrained(
+    shared_pipeline = StableDiffusionPipeline.from_pretrained(
         model_id,
         torch_dtype=torch.float16 if device == "cuda" else torch.float32
     )
-    pipe = pipe.to(device)
+    shared_pipeline = shared_pipeline.to(device)
 except Exception as e:
     raise RuntimeError(f"Failed to load model: {str(e)}")
 
 # Pydantic models for request/response
-class ImageRequest(BaseModel):
+class TextToImageInput(BaseModel):
     prompt: str
     n: Optional[int] = 1
     size: Optional[str] = "512x512"
@@ -36,37 +41,52 @@ class ImageResponse(BaseModel):
     created: int
     data: List[dict]
 
-# Helper function to generate image
-def generate_image(prompt: str, num_images: int = 1) -> List[Image.Image]:
-    images = pipe(
-        prompt,
-        num_images_per_prompt=num_images,
-        num_inference_steps=30
-    ).images
-    return images
+# Helper function to generate image using shared pipeline
+async def generate_image_with_shared_pipeline(prompt: str, num_images: int = 1) -> List[Image.Image]:
+    # Create a new pipeline instance from the shared one for thread safety
+    loop = asyncio.get_event_loop()
+    
+    # Create a new pipeline with the same configuration but fresh scheduler
+    pipeline = StableDiffusionPipeline.from_pipe(shared_pipeline)
+    
+    # Set up generator with random seed
+    generator = torch.Generator(device=device)
+    generator.manual_seed(random.randint(0, 10000000))
+    
+    # Generate images asynchronously
+    output = await loop.run_in_executor(
+        None, 
+        lambda: pipeline(prompt, generator=generator, num_images_per_prompt=num_images, num_inference_steps=30)
+    )
+    
+    return output.images
 
 # OpenAI-compatible endpoint
 @app.post("/v1/images/generations", response_model=ImageResponse)
-async def create_image(request: ImageRequest):
+async def generate_image(image_input: TextToImageInput):
     try:
         # Validate parameters
-        if request.n < 1 or request.n > 10:
+        if image_input.n < 1 or image_input.n > 10:
             raise HTTPException(status_code=400, detail="n must be between 1 and 10")
         
-        # Generate images
-        images = generate_image(request.prompt, request.n)
+        # Generate images using shared pipeline
+        images = await generate_image_with_shared_pipeline(image_input.prompt, image_input.n)
         
         # Convert to base64 strings if needed
         image_data = []
         for i, img in enumerate(images):
-            if request.response_format == "b64_json":
+            if image_input.response_format == "b64_json":
                 buffer = io.BytesIO()
                 img.save(buffer, format="PNG")
                 buffer.seek(0)
                 img_str = base64.b64encode(buffer.getvalue()).decode()
                 image_data.append({"b64_json": img_str})
-            else:  # Default to URL format (using placeholder)
-                image_data.append({"url": f"data:image/png;base64,{base64.b64encode(io.BytesIO().getvalue())}"})
+            else:  # Default to URL format
+                buffer = io.BytesIO()
+                img.save(buffer, format="PNG")
+                buffer.seek(0)
+                img_str = base64.b64encode(buffer.getvalue()).decode()
+                image_data.append({"url": f"data:image/png;base64,{img_str}"})
         
         return ImageResponse(
             created=int(time.time()),
