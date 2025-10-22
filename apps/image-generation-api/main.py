@@ -65,28 +65,17 @@ async def generate_image_with_shared_pipeline(prompt: str, num_images: int = 1) 
 @app.post("/v1/images/generations", response_model=ImageResponse)
 async def generate_image(image_input: TextToImageInput):
     try:
-        # Validate parameters
-        if image_input.n < 1 or image_input.n > 10:
-            raise HTTPException(status_code=400, detail="n must be between 1 and 10")
+        # Generate image using shared pipeline (only one image at a time)
+        images = await generate_image_with_shared_pipeline(image_input.prompt, 1)
         
-        # Generate images using shared pipeline
-        images = await generate_image_with_shared_pipeline(image_input.prompt, image_input.n)
-        
-        # Convert to base64 strings if needed
+        # Convert to base64 strings
         image_data = []
-        for i, img in enumerate(images):
-            if image_input.response_format == "b64_json":
-                buffer = io.BytesIO()
-                img.save(buffer, format="PNG")
-                buffer.seek(0)
-                img_str = base64.b64encode(buffer.getvalue()).decode()
-                image_data.append({"b64_json": img_str})
-            else:  # Default to URL format
-                buffer = io.BytesIO()
-                img.save(buffer, format="PNG")
-                buffer.seek(0)
-                img_str = base64.b64encode(buffer.getvalue()).decode()
-                image_data.append({"url": f"data:image/png;base64,{img_str}"})
+        for img in images:
+            buffer = io.BytesIO()
+            img.save(buffer, format="PNG")
+            buffer.seek(0)
+            img_str = base64.b64encode(buffer.getvalue()).decode()
+            image_data.append({"b64_json": img_str})
         
         return ImageResponse(
             created=int(time.time()),
