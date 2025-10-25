@@ -68,7 +68,7 @@ async def image_generations(request: TextToImageRequest):
     height = 512
     if request.size:
         split = request.size.split("x")
-        if(not split[0].isdigit() or split[1].isdigit()):
+        if(not split[0].isdigit() or not split[1].isdigit()):
             raise ValueError("Size should be width by height (e.g. 512x512)")
         width = int(split[0])
         height = int(split[1])
