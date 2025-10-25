@@ -33,8 +33,8 @@ class TextToImagePipeline:
             self.device = "cuda"
             self.pipeline = DiffusionPipeline.from_pretrained(
                 MODEL_NAME,
-                torch_dtype=torch.float16,
-            ).to(device=self.device)
+                dtype=torch.float16,
+                device_map="balanced")
         else:
             raise Exception("No CUDA device available")
 
@@ -48,30 +48,33 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(title="Image Generation API", version="1.0.0", lifespan=lifespan)
 
-# Helper function to generate image using shared pipeline
-async def generate(prompt: str) -> List[Image.Image]:
+async def generate(prompt: str, width: int, height: int) -> List[Image.Image]:
     # Create a new pipeline instance from the shared one for thread safety
     loop = asyncio.get_event_loop()
     if(shared_pipeline.pipeline == None):
         raise RuntimeError("Pipeline has not been started yet.")
     
     scheduler = shared_pipeline.pipeline.scheduler.from_config(shared_pipeline.pipeline.scheduler.config)
-    pipeline = shared_pipeline.pipeline.from_pipe(shared_pipeline.pipeline,
-                                                  scheduler=scheduler,
-                                                  torch_dtype=torch.float16
-                                                  )
+    pipeline = shared_pipeline.pipeline.from_pipe(shared_pipeline.pipeline, scheduler=scheduler)
     
     generator = torch.Generator(device=shared_pipeline.device)
-    output = await loop.run_in_executor(None, lambda: pipeline(prompt, generator=generator)) #type: ignore
+    output = await loop.run_in_executor(None, lambda: pipeline(prompt, generator=generator, width=width, height=height)) #type: ignore
     return output.images #type: ignore
 
-# OpenAI-compatible endpoint
+
 @app.post("/v1/images/generations", response_model=ImageResponse)
-async def image_generations(image_input: TextToImageRequest):
-    # Generate image using shared pipeline (only one image at a time)
-    images = await generate(image_input.prompt)
+async def image_generations(request: TextToImageRequest):
+    width = 512
+    height = 512
+    if request.size:
+        split = request.size.split("x")
+        if(not split[0].isdigit() or split[1].isdigit()):
+            raise ValueError("Size should be width by height (e.g. 512x512)")
+        width = int(split[0])
+        height = int(split[1])
+    images = await generate(request.prompt, width, height)
     
-    # Convert to base64 strings with optimized format
+    # Convert to base64 strings
     image_data = []
     for img in images:
         buffer = io.BytesIO()
@@ -87,7 +90,7 @@ async def image_generations(image_input: TextToImageRequest):
 # Health check endpoint
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"}
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Text-to-Speech API Server")
