@@ -13,4 +13,5 @@ extraPaths = "shared"
 members = [
     "apps/knowledge-base-web-crawler",
     "apps/tts-server",
+    "apps/image-generation-server"
 ]

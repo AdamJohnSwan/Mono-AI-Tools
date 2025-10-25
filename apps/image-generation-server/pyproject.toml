@@ -1,0 +1,13 @@
+[project]
+name = "image-generation-server"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "diffusers[torch]>=0.35.2",
+    "dotenv>=0.9.9",
+    "fastapi>=0.119.0",
+    "transformers>=4.55.4",
+    "uvicorn>=0.37.0",
+]
