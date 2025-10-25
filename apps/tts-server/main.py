@@ -36,6 +36,18 @@ class SpeechRequest(BaseModel):
 async def health_check():
     return {"status": "ok"}
 
+@app.get("/v1/audio/models")
+async def get_models():
+    return {
+        "models": ["xtts_v2"]
+    }
+
+@app.get("/v1/audio/voices")
+async def get_voices():
+    return {
+        "voices": tts_model.speakers
+    }
+
 @app.post("/v1/audio/speech", summary="Takes text and synthesizes it into speech.", status_code=200)
 async def text_to_speech(request: SpeechRequest):
     input_text = request.input
