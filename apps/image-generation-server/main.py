@@ -31,13 +31,12 @@ class TextToImagePipeline:
         if torch.cuda.is_available():
             logger.info("Loading CUDA")
             self.device = "cuda"
-        else:
-            logger.info("Loading CPU")
-            self.device = "cpu"
-        self.pipeline = DiffusionPipeline.from_pretrained(
+            self.pipeline = DiffusionPipeline.from_pretrained(
                 MODEL_NAME,
-                #torch_dtype=torch.float16,
+                torch_dtype=torch.float16,
             ).to(device=self.device)
+        else:
+            raise Exception("No CUDA device available")
 
 shared_pipeline = TextToImagePipeline()
 
@@ -59,7 +58,7 @@ async def generate(prompt: str) -> List[Image.Image]:
     scheduler = shared_pipeline.pipeline.scheduler.from_config(shared_pipeline.pipeline.scheduler.config)
     pipeline = shared_pipeline.pipeline.from_pipe(shared_pipeline.pipeline,
                                                   scheduler=scheduler,
-                                                  #torch_dtype=torch.float16
+                                                  torch_dtype=torch.float16
                                                   )
     
     generator = torch.Generator(device=shared_pipeline.device)
