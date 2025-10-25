@@ -7,6 +7,10 @@ The repo uses `uv` for dependency management and packaging.
 ## The tools
 - knowledge-base-web-crawler
   - MCP tool that will crawl a url and then upload the result to an OpenWebUI knowledge base
+- tts-server
+  - OpenAI-api-compatible web server for generating speech 
+- image-generation-server
+  - OpenAI-api-compatible web server for generating images from a prompt
 
 ## Running a project
 
