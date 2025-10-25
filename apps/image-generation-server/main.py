@@ -33,7 +33,7 @@ class TextToImagePipeline:
             self.device = "cuda"
             self.pipeline = DiffusionPipeline.from_pretrained(
                 MODEL_NAME,
-                dtype=torch.float16,
+                torch_dtype=torch.float16,
                 device_map="balanced")
         else:
             raise Exception("No CUDA device available")
@@ -55,7 +55,7 @@ async def generate(prompt: str, width: int, height: int) -> List[Image.Image]:
         raise RuntimeError("Pipeline has not been started yet.")
     
     scheduler = shared_pipeline.pipeline.scheduler.from_config(shared_pipeline.pipeline.scheduler.config)
-    pipeline = shared_pipeline.pipeline.from_pipe(shared_pipeline.pipeline, scheduler=scheduler)
+    pipeline = shared_pipeline.pipeline.from_pipe(shared_pipeline.pipeline, scheduler=scheduler, torch_dtype=torch.float16)
     
     generator = torch.Generator(device=shared_pipeline.device)
     output = await loop.run_in_executor(None, lambda: pipeline(prompt, generator=generator, width=width, height=height)) #type: ignore
