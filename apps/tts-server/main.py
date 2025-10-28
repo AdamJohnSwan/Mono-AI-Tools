@@ -7,14 +7,19 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from starlette.background import BackgroundTask
+import logging
 
 from TTS.api import TTS
 
+logger = logging.getLogger(__name__)
 app = FastAPI(title="Text-to-Speech API", version="1.0.0")
 
 device = "cpu"
 if torch.cuda.is_available():
+    logger.info("Using CUDA")
     device = "cuda"
+else:
+    logger.info("Using CPU")
 
 try:
     tts_model = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
@@ -55,13 +60,16 @@ async def text_to_speech(request: SpeechRequest):
 
     # Extract language from voice (e.g., "Badr Odhiambo-en" -> "en")
     language_parts = voice.split("-")
-    language = language_parts[-1] if len(language_parts) > 1 else "en"
-    
+    language = "en"
+    if(len(language_parts) > 1):
+        voice = "-".join(language_parts[:-1])
+        language = language_parts[-1]
+
     # Generate unique filename for temporary file
     temp_file = NamedTemporaryFile(delete=False)
     temp_path = temp_file.name
     temp_file.close()
-    
+
     # Generate speech using TTS model
     tts_model.tts_to_file(
         text=input_text,
@@ -69,7 +77,7 @@ async def text_to_speech(request: SpeechRequest):
         language=language,
         file_path=temp_path
     )
-    
+
     return FileResponse(
         temp_path,
         media_type="audio/wav",
@@ -79,12 +87,13 @@ async def text_to_speech(request: SpeechRequest):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Text-to-Speech API Server")
     parser.add_argument("--port", type=int, required=True, help="Port number to run the server on")
-    
+
     args = parser.parse_args()
-    
+
     if not args.port:
         print("Error: Port number is required. Use --port <port_number>")
         exit(1)
-    
+
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=args.port)
+    

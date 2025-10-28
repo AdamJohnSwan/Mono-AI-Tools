@@ -8,10 +8,3 @@ version = "0.0.0"
 reportMissingTypeStubs = false
 typeCheckingMode = "standard"
 extraPaths = "shared"
-
-[tool.uv.workspace]
-members = [
-    "apps/knowledge-base-web-crawler",
-    "apps/tts-server",
-    "apps/image-generation-server"
-]
